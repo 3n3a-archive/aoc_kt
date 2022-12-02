@@ -1,4 +1,4 @@
-fun Day01() {
+fun Day02() {
     fun part1(input: List<String>): Int {
         return input.size
     }
@@ -15,3 +15,4 @@ fun Day01() {
     println(part1(input))
     println(part2(input))
 }
+

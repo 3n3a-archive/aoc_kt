@@ -11,6 +11,15 @@ If you're stuck with Kotlin-specific questions or anything related to this templ
 - Template [issue tracker][issues]
 
 
+## Running
+
+You can run the examples of this repository from the command line:
+
+```bash
+./gradlew run
+```
+
+
 [^aoc]:
     [Advent of Code][aoc] – An annual event of Christmas-oriented programming challenges started December 2015.
     Every year since then, beginning on the first day of December, a programming puzzle is published every day for twenty-five days.
