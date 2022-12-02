@@ -64,9 +64,45 @@ fun Day02() {
         }
         return sumOfPoints
     }
+
+    fun getWinningMove(char: Char?) {
+        when(char) {
+            'R' -> return 'P'
+            'P' -> return 'S'
+            'S' -> return 'R'
+        }
+    }
+
+    fun getLosingMove(char: Char?) {
+        when(char) {
+            'R' -> return 'S'
+            'P' -> return 'R'
+            'S' -> return 'P'
+        }
+    }
+
+    fun getDesiredOutcome(player1: Char?, outcome: Char?) {
+        val x = 'R'
+        val y = 'P'
+        val z = 'S'
+        when(outcome) {
+            x -> return getLosingMove(player1)
+            y -> return player1 // draw
+            z -> retuen getWinningMove(player1) 
+        }
+    }
     
     fun part2(input: List<String>): Int {
-        return input.size
+        val processed = preprocess(input)
+
+        var sumOfPoints = 0
+        for (element in processed)  {
+            val player2 = getDesiredOutcome(element[0], element[1])
+            val gameStats = rockPaperScissor(element[0] ?: 'E', player2 ?: 'E')
+            val points = getPointsForPlayer2(gameStats, player2)
+            sumOfPoints += points 
+        }
+        return sumOfPoints
     }
 
     // test if implementation meets criteria from the description, like:
