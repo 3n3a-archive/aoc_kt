@@ -32,9 +32,9 @@ fun Day02() {
             return 2
         }
         
-        val isPlayer1Winning = player1.compareTo(player2)
+        val player1GameResults = player1.compareTo(player2)
 
-        when(isPlayer1Winning) {
+        when(player1GameResults) {
             1 -> return 2
             0 -> return 0
             -1 -> return 1
@@ -51,10 +51,6 @@ fun Day02() {
               getMappedChar(replacementMap, it.toCharArray()[0] ) 
             }
           }
-        //   .map {
-        //     it[0] to it[1]
-        //   }
-        //   .toMap()
     }
 
     fun part1(input: List<String>): Int {
@@ -79,6 +75,6 @@ fun Day02() {
     
     val input = readInput("Day02")
     println("1: " + part1(input))
-    println("2: " + part1(input))
+    println("2: " + part2(input))
 }
 
