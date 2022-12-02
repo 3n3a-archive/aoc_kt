@@ -1,5 +1,5 @@
 fun main() {
-    val SELECTED_DAY = 1
+    val SELECTED_DAY = 2
 
     // Decide which Day to execute
     val allDays = arrayOf(
