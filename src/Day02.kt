@@ -65,31 +65,34 @@ fun Day02() {
         return sumOfPoints
     }
 
-    fun getWinningMove(char: Char?) {
+    fun getWinningMove(char: Char?): Char {
         when(char) {
             'R' -> return 'P'
             'P' -> return 'S'
             'S' -> return 'R'
         }
+        return 'E'
     }
 
-    fun getLosingMove(char: Char?) {
+    fun getLosingMove(char: Char?): Char {
         when(char) {
             'R' -> return 'S'
             'P' -> return 'R'
             'S' -> return 'P'
         }
+        return 'E'
     }
 
-    fun getDesiredOutcome(player1: Char?, outcome: Char?) {
+    fun getDesiredOutcome(player1: Char?, outcome: Char?): Char? {
         val x = 'R'
         val y = 'P'
         val z = 'S'
         when(outcome) {
             x -> return getLosingMove(player1)
             y -> return player1 // draw
-            z -> retuen getWinningMove(player1) 
+            z -> return getWinningMove(player1)
         }
+        return 'E'
     }
     
     fun part2(input: List<String>): Int {
