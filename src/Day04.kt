@@ -1,9 +1,22 @@
 fun Day04() {
     fun preprocess(input: List<String>): List<List<Set<Int>>> {
         return input
-            .map { it.split(",") } // to pair of elves
-            .map { it.map { it2 -> it2.split("-") } } // each elf gets pair of numbers
-            .map { it.map { it2 -> IntRange(it2[0].toInt(), it2[1].toInt()).toSet() }} // each elf gets range of numbers
+            .map {
+                it.split(",")
+            } // to pair of elves
+            .map {
+                it.map {
+                        it2 -> it2.split("-")
+                }
+            } // each elf gets pair of numbers
+            .map {
+                it.map {
+                        it2 -> IntRange(
+                            it2[0].toInt(),
+                            it2[1].toInt()
+                        ).toSet()
+                }
+            } // each elf gets range of numbers
     }
 
     fun part1(input: List<String>): Int {
