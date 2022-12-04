@@ -3,6 +3,8 @@
 # Scaffold New Day
 #
 
+set -u
+
 DAY_NUMBER="05"
 SRC_PATH="src"
 TEMPLATE_PATH="Template.txt"
@@ -11,7 +13,7 @@ function create_input_files() {
     (
       cd "$SRC_PATH" || exit
       touch "Day$DAY_NUMBER.txt"
-      touch "Day$DAY_NUMBER\_test.txt"
+      touch "Day${DAY_NUMBER}_test.txt"
       create_code_file
     )
 }
