@@ -5,7 +5,8 @@
 
 set -u
 
-DAY_NUMBER="05"
+# needs to be in 2 digit format: '01'
+DAY_NUMBER="$1"
 SRC_PATH="src"
 TEMPLATE_PATH="Template.txt"
 
