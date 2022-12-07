@@ -21,7 +21,7 @@ function create_input_files() {
 
 function create_code_file() {
     CODE_FILE="Day$DAY_NUMBER.kt"
-    cp "$TEMPLATE_PATH" "$CODE_FILE"
+    cp "../$TEMPLATE_PATH" "$CODE_FILE"
     sed -i "s/Template/Day$DAY_NUMBER/" "$CODE_FILE"
 }
 
