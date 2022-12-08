@@ -263,6 +263,6 @@ fun Day08() {
 
     val input = readInput("Day08")
     //println("1: " + (part1(input) == 1798))
-    println("2: " + part2(input))
+    println("2: " + (part2(input) == 259308))
 }
 
