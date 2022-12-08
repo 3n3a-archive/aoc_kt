@@ -1,3 +1,4 @@
+/*
 fun Day07() {
     fun preprocess(input: List<String>): List<String> {
         return input
@@ -22,4 +23,5 @@ fun Day07() {
     //println("1: " + part1(input))
     //println("2: " + part2(input))
 }
+*/
 

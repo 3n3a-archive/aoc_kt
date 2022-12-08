@@ -1,5 +1,5 @@
 fun main() {
-    val SELECTED_DAY = 4
+    val SELECTED_DAY = 8
 
     // Decide which Day to execute
     val allDays = arrayOf(
@@ -7,6 +7,10 @@ fun main() {
         ::Day02,
         ::Day03,
         ::Day04,
+        ::Day04,
+        ::Day04,
+        ::Day04,
+        ::Day08,
     )
     allDays[SELECTED_DAY - 1]()
 }
