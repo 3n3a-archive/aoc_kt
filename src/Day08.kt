@@ -140,18 +140,129 @@ fun Day08() {
         return innerVisible + outerVisible
     }
 
+    fun isViewBlocked(self: Int, other: Int): Boolean {
+        return self <= other
+    }
+
+    fun getUpViewingDistance(rowIndex: Int, treeIndex: Int, allTrees: Array<IntArray>): Int {
+        val currentTree = allTrees[rowIndex][treeIndex]
+        // up
+        var isTreeBlocking = false
+        var currentRowIndex = rowIndex
+        var treeCount = 0
+        while (isTreeBlocking == false) {
+            val currentOneTreeUp = if (currentRowIndex > 0) allTrees[currentRowIndex - 1][treeIndex] else -1
+
+            //println("\t\tcurrent: $currentTree, oneUp: $currentOneTreeUp")
+
+            if (isViewBlocked(currentTree, currentOneTreeUp) || currentRowIndex == 0) {
+
+                //println("$currentOneTreeUp is blocking $currentTree")
+
+                if (currentOneTreeUp != -1) treeCount = treeCount.inc()
+
+                isTreeBlocking = true
+            } else {
+                treeCount = treeCount.inc()
+                currentRowIndex = currentRowIndex.dec()
+            }
+        }
+        return treeCount
+    }
+
+    fun getDownViewingDistance(rowIndex: Int, treeIndex: Int, allTrees: Array<IntArray>): Int {
+        val currentTree = allTrees[rowIndex][treeIndex]
+        // up
+        var isTreeBlocking = false
+        var currentRowIndex = rowIndex
+        var treeCount = 0
+        while (isTreeBlocking == false) {
+            val currentOneTreeDown = if (currentRowIndex < allTrees.size -1) allTrees[currentRowIndex + 1][treeIndex] else 999999
+
+            //println("\t\tcurrent: $currentTree, oneUp: $currentOneTreeUp")
+
+            if (isViewBlocked(currentTree, currentOneTreeDown) || currentRowIndex == allTrees.size - 1) {
+
+                //println("$currentOneTreeUp is blocking $currentTree")
+
+                if (currentOneTreeDown != 999999) treeCount = treeCount.inc()
+
+                isTreeBlocking = true
+            } else {
+                treeCount = treeCount.inc()
+                currentRowIndex = currentRowIndex.inc()
+            }
+        }
+        return treeCount
+    }
+
+    fun getLeftViewingDistance(treeIndex: Int, treeRow: IntArray): Int {
+        val currentTree = treeRow[treeIndex]
+        var isTreeBlocking = false
+        var currentTreeIndex = treeIndex
+        var treeCount  = 0
+        while (isTreeBlocking == false) {
+            val treeToTheLeft = if (currentTreeIndex > 0) treeRow[currentTreeIndex - 1] else -1
+            if (isViewBlocked(currentTree, treeToTheLeft) || currentTreeIndex == 0) {
+                if (treeToTheLeft != -1) treeCount = treeCount.inc()
+
+                isTreeBlocking = true
+            } else {
+                treeCount = treeCount.inc()
+                currentTreeIndex = currentTreeIndex.dec()
+            }
+        }
+        return treeCount
+    }
+
+    fun getRightViewingDistance(treeIndex: Int, treeRow: IntArray): Int {
+        val currentTree = treeRow[treeIndex]
+        var isTreeBlocking = false
+        var currentTreeIndex = treeIndex
+        var treeCount  = 0
+        while (isTreeBlocking == false) {
+            val treeToTheRight = if (currentTreeIndex < treeRow.size - 1) treeRow[currentTreeIndex + 1] else 999999
+            if (isViewBlocked(currentTree, treeToTheRight) || currentTreeIndex == treeRow.size - 1) {
+                if (treeToTheRight != 999999) treeCount = treeCount.inc()
+
+                isTreeBlocking = true
+            } else {
+                treeCount = treeCount.inc()
+                currentTreeIndex = currentTreeIndex.inc()
+            }
+        }
+        return treeCount
+    }
+
     fun part2(input: List<String>): Int {
-        
-        return 0
+        val processed = preprocess(input)
+
+        val scenicScores = mutableListOf<Int>()
+        for ((rowIndex, treeRow) in processed.withIndex())  {
+            for ((treeIndex, tree) in treeRow.withIndex()) {
+                val upwards = getUpViewingDistance(rowIndex, treeIndex, processed)
+                val downwards = getDownViewingDistance(rowIndex, treeIndex, processed)
+
+                val left = getLeftViewingDistance(treeIndex, treeRow)
+                val right = getRightViewingDistance(treeIndex, treeRow)
+
+                val score = upwards * downwards * left * right
+
+                scenicScores.add(score)
+                println("[$rowIndex/$treeIndex]: $tree --> $score")
+            }
+        }
+
+        return scenicScores.maxOf { it }
     }
 
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day08_test")
-    check(part1(testInput) == 21)
-    //check(part2(testInput) == 4)
+    //check(part1(testInput) == 21)
+    check(part2(testInput) == 8)
 
     val input = readInput("Day08")
-    println("1: " + part1(input))
-    //println("2: " + part2(input))
+    //println("1: " + (part1(input) == 1798))
+    println("2: " + part2(input))
 }
 
