@@ -8,7 +8,7 @@ fun main() {
         ::Day03,
         ::Day04,
         ::Day05,
-        ::Day06, // 6
+        ::Day06,
         ::Day04, // 7
         ::Day08,
     )
