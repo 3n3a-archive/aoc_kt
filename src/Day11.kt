@@ -1,4 +1,11 @@
-import java.math.BigInteger
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
+import com.ionspin.kotlin.bignum.decimal.DecimalMode
+import com.ionspin.kotlin.bignum.decimal.RoundingMode
+import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.toBigInteger
+import com.ionspin.kotlin.bignum.modular.ModularBigInteger
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 data class Monkey(
     val index: Int,
@@ -9,8 +16,21 @@ data class Monkey(
     val ifFalse: Int,
     var inspectedItemsCount: BigInteger,
 )
+@OptIn(ExperimentalTime::class)
 fun Day11() {
-    var divideByThree = true
+    fun divideByThree(number: BigInteger): BigInteger {
+        return BigDecimal.fromBigInteger(number).divide(BigDecimal.fromInt(3), DecimalMode(5, RoundingMode.FLOOR, 0)).toBigInteger()
+    }
+
+    var lcm: BigInteger = 0.toBigInteger()
+
+    fun largestCommonModulo(number: BigInteger): BigInteger {
+        return number.mod(lcm)
+    }
+
+    var reductionFunc = ::divideByThree
+    var roundCount = 0
+
 
     fun preprocess(input: String): MutableList<Monkey> {
         val monkeyRegex = "Monkey.(.*):\\n.*Starting.items:.(.*)\\n.*Operation:.new.=.(.*)\\n.*Test:.divisible.by.(.*)\\n.*If.true:.throw.to.monkey.(.*)\\n.*If.false:.throw.to.monkey.(.*)".toRegex(RegexOption.MULTILINE)
@@ -36,7 +56,7 @@ fun Day11() {
                 monkeyTest,
                 monkeyTestTrue,
                 monkeyTestFalse,
-                BigInteger("0")
+                0.toBigInteger()
             ))
         }
 
@@ -46,13 +66,21 @@ fun Day11() {
     fun doCalculation(first: BigInteger, second: BigInteger, operation: String): BigInteger {
         when(operation) {
             "+" -> {
-                return first.add(second)
+                return first + second
             }
             "*" -> {
-                return first.multiply(second)
+                return first * second
             }
         }
-        return BigInteger("0")
+        return 0.toBigInteger()
+    }
+
+    fun replaceWithBigIntIfOld(numberString: String, replacement: BigInteger): BigInteger {
+        return if (numberString == "old") {
+            replacement
+        } else {
+            numberString.toBigInteger()
+        }
     }
 
     fun inspectStartingItems(items: MutableList<BigInteger>, operation: String): List<BigInteger> {
@@ -61,21 +89,25 @@ fun Day11() {
         // inspect each item
         for (item in items) {
             // apply operation to item
-            val (firstNumber, calcOperation, secondNumber) = operation.replace("old", item.toString()).split(" ")
-            val calcResult: BigInteger = doCalculation(firstNumber.toBigInteger(), secondNumber.toBigInteger(), calcOperation)
+            val (firstItem, calcOperation, secondItem) = operation.split(" ")
+
+            val firstNumber = replaceWithBigIntIfOld(firstItem, item)
+            val secondNumber = replaceWithBigIntIfOld(secondItem, item)
+
+            val calcResult: BigInteger = doCalculation(firstNumber, secondNumber, calcOperation)
 
             // divide by 3
-            var dividedByThree: BigInteger = if (divideByThree) {
-                calcResult.divide(BigInteger("3"))
-            } else {
-                calcResult
-            }
+            var reducedResult = reductionFunc(calcResult)
 
             //println("Calc: $firstNumber $calcOperation $secondNumber = $calcResult")
 
-            newList.add(dividedByThree)
+            newList.add(reducedResult)
         }
         return newList
+    }
+
+    fun largestCommonModulo(monkeys: List<Monkey>): BigInteger {
+        return monkeys.fold(1.toBigInteger()) { lcm, element -> lcm * element.testDivisibleBy }
     }
 
     fun executeTurn(monkey: Monkey, monkeys: MutableList<Monkey>): MutableList<Monkey> {
@@ -85,7 +117,7 @@ fun Day11() {
         }
 
         val newItems = inspectStartingItems(monkey.startingItems, monkey.operation)
-        monkeys.filter { it.index == monkey.index }[0].inspectedItemsCount = monkeys.filter { it.index == monkey.index }[0].inspectedItemsCount.add(newItems.size.toBigInteger())
+        monkeys.filter { it.index == monkey.index }[0].inspectedItemsCount += newItems.size
 
         // reset starting items for current monkey
         monkeys.filter { it.index == monkey.index }[0].startingItems = mutableListOf()
@@ -94,7 +126,7 @@ fun Day11() {
         for (item in newItems) {
             // test item
             // is divisible without remainder
-            val testResult = item.mod(monkey.testDivisibleBy) == 0.toBigInteger()
+            val testResult = (item % monkey.testDivisibleBy) == 0.toBigInteger()
 
             // throw based on test result
             var monkeyToThrowTo = when (testResult) {
@@ -112,21 +144,34 @@ fun Day11() {
         return monkeys
     }
 
+    fun printMonkeys(monkeys: List<Monkey>, round: Int) {
+        println("== After round $round ==")
+        for (monkey in monkeys) {
+            println("Monkey ${monkey.index} inspected items ${monkey.inspectedItemsCount} times.")
+        }
+        println()
+    }
+
     fun doRounds(monkeysInput: MutableList<Monkey>, rounds: Int): BigInteger {
         var monkeys = monkeysInput
 
         for (i in 1..rounds) {
-            println("\n=== ROUND $i ===")
-            for (monkey in monkeys) {
-                monkeys = executeTurn(monkey, monkeys)
+            roundCount += 1
+
+            print("\n=== ROUND $i ===")
+            val elapsed = measureTime {
+                for (monkey in monkeys) {
+                    monkeys = executeTurn(monkey, monkeys)
+                }
             }
+            println("$elapsed.")
         }
 
         monkeys.sortBy { it.inspectedItemsCount }
         monkeys.reverse()
 
         val topMonkeys = monkeys.take(2)
-        var levelOfMonkeyBiz: BigInteger = topMonkeys[0].inspectedItemsCount.multiply(topMonkeys[1].inspectedItemsCount)
+        var levelOfMonkeyBiz: BigInteger = topMonkeys[0].inspectedItemsCount * topMonkeys[1].inspectedItemsCount
 
         println(monkeys)
         println("Level of Monkey Biz: $levelOfMonkeyBiz")
@@ -134,14 +179,14 @@ fun Day11() {
     }
 
     fun part1(input: String): BigInteger {
-        divideByThree = true
         val monkeys = preprocess(input)
         return doRounds(monkeys, 20)
     }
 
     fun part2(input: String): BigInteger {
-        divideByThree = false
         val monkeys = preprocess(input)
+        reductionFunc = ::largestCommonModulo
+        lcm = largestCommonModulo(monkeys)
         return doRounds(monkeys, 10000)
     }
 
@@ -149,11 +194,11 @@ fun Day11() {
 
     // test if implementation meets criteria from the description, like:
     val testInput = readInputToText("Day11_test")
-    check(part1(testInput) == 10605.toBigInteger())
-    check(part2(testInput) == 2713310158.toBigInteger())
+    check(part1(testInput) == 10605L.toBigInteger())
+    check(part2(testInput) == 2713310158L.toBigInteger())
 
     val input = readInputToText("Day11")
-    //println("1: " + (part1(input) == 107822))
-    //println("2: " + part2(input))
+    println("1: " + (part1(input) == 107822L.toBigInteger()))
+    println("2: " + (part2(input) == 27267163742L.toBigInteger()))
 }
 

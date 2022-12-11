@@ -7,6 +7,10 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    implementation("com.ionspin.kotlin:bignum:0.3.7")
+}
+
 tasks {
     sourceSets {
         main {
